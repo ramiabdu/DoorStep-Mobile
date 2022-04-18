@@ -5,6 +5,8 @@
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
+    "server": "node backend/src/server.js",
+    "server:test": "node --test backend/test/*.test.js",
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint ."

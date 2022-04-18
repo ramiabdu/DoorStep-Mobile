@@ -1,14 +1,8 @@
-import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
-import Login from './Screens/Login/Login';
-import Register from './Screens/Register/Register';
+import DoorStepApp from './src/DoorStepApp';
 
 const App = () => {
-  return (
-    <Login />
-  );
+  return <DoorStepApp />;
 };
 
 export default App;
-
-const styles = StyleSheet.create({});
