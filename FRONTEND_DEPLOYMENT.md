@@ -65,9 +65,11 @@ npm run preview
 Use the repository root as the Vercel project root. The root `vercel.json` already defines:
 
 ```text
+Framework: Vite
 Install Command: npm --prefix frontend install
 Build Command: npm --prefix frontend run build
 Output Directory: frontend/dist
+SPA fallback: /(.*) -> /index.html
 ```
 
 Add this Vercel environment variable:

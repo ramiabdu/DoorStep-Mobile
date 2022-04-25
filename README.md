@@ -17,6 +17,15 @@ DoorStep is a production-shaped full-stack doorstep delivery platform. It includ
 - API health: `https://doorstep-mobile.onrender.com/health`
 - API docs: `https://doorstep-mobile.onrender.com/docs`
 
+## Deployment Status
+
+```text
+Frontend: ready for Vercel from the repository root
+Backend: ready for Render at https://doorstep-mobile.onrender.com
+CI: lint, typecheck, frontend build, and backend smoke test configured
+SPA routing: configured through vercel.json rewrites
+```
+
 ## What This Shows
 
 - Full-stack architecture with deployable frontend and backend surfaces
@@ -77,6 +86,13 @@ npm run config:check
 npm run lint
 npm run typecheck
 npm run build
+```
+
+Root build commands for Vercel:
+
+```bash
+npm run build
+npm run vercel-build
 ```
 
 ## Backend

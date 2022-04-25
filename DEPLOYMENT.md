@@ -99,6 +99,12 @@ npm install
 npm run dev
 ```
 
+Root Vercel build parity:
+
+```bash
+npm run build
+```
+
 Mobile:
 
 ```bash

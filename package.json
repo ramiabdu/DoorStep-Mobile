@@ -2,8 +2,12 @@
   "name": "doorstep",
   "version": "0.0.1",
   "private": true,
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "android": "react-native run-android",
+    "build": "npm --prefix frontend run build",
     "frontend:build": "npm --prefix frontend run build",
     "frontend:dev": "npm --prefix frontend run dev",
     "frontend:lint": "npm --prefix frontend run lint",
@@ -13,6 +17,7 @@
     "server:test": "node --test backend/test/*.test.js",
     "start": "react-native start",
     "test": "jest",
+    "vercel-build": "npm --prefix frontend run build",
     "lint": "eslint ."
   },
   "dependencies": {
