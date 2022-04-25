@@ -213,7 +213,7 @@ class AuthService {
   }
 
   debugOtp(verification) {
-    if (this.config.env === 'production') {
+    if (this.config.env === 'production' && !this.config.demoOtpEnabled) {
       return undefined;
     }
 

@@ -1,10 +1,4 @@
-import {Platform} from 'react-native';
-
-const defaultBaseUrl = Platform.select({
-  android: 'http://10.0.2.2:4000',
-  ios: 'http://localhost:4000',
-  default: 'http://localhost:4000',
-});
+const defaultBaseUrl = 'https://doorstep-mobile.onrender.com';
 
 const withTimeout = (promise, timeoutMs = 9000) =>
   Promise.race([

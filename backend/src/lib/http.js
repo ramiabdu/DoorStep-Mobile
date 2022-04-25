@@ -2,9 +2,29 @@ const {AppError} = require('./errors');
 
 const jsonHeaders = {
   'Content-Type': 'application/json; charset=utf-8',
-  'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   'Access-Control-Allow-Methods': 'GET,POST,PATCH,OPTIONS',
+};
+
+const createCorsHeaders = (req, allowedOrigins = ['*']) => {
+  const origin = req.headers.origin;
+
+  if (allowedOrigins.includes('*')) {
+    return {
+      'Access-Control-Allow-Origin': '*',
+    };
+  }
+
+  if (origin && allowedOrigins.includes(origin)) {
+    return {
+      'Access-Control-Allow-Origin': origin,
+      Vary: 'Origin',
+    };
+  }
+
+  return {
+    Vary: 'Origin',
+  };
 };
 
 const sendJson = (res, statusCode, payload, headers = {}) => {
@@ -60,7 +80,7 @@ const getBearerToken = req => {
   return token.trim();
 };
 
-const handleError = (res, error) => {
+const handleError = (res, error, headers = {}) => {
   const statusCode = error.statusCode || 500;
   const payload = {
     error: {
@@ -76,10 +96,11 @@ const handleError = (res, error) => {
     payload.error.details = error.details;
   }
 
-  sendJson(res, statusCode, payload);
+  sendJson(res, statusCode, payload, headers);
 };
 
 module.exports = {
+  createCorsHeaders,
   getBearerToken,
   handleError,
   jsonHeaders,

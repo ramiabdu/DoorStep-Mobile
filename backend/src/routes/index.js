@@ -1,4 +1,14 @@
 const registerRoutes = router => {
+  router.get('/', ({services}) => ({
+    status: 200,
+    body: services.docs.overview(),
+  }));
+
+  router.get('/docs', ({services}) => ({
+    status: 200,
+    body: services.docs.overview(),
+  }));
+
   router.get('/health', () => ({
     status: 200,
     body: {

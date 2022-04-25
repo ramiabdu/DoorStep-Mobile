@@ -50,7 +50,7 @@ class Router {
     this.add('POST', path, options, handler);
   }
 
-  async handle(req, res) {
+  async handle(req, res, options = {}) {
     const url = new URL(req.url, 'http://doorstep.local');
     const method = req.method.toUpperCase();
 
@@ -88,7 +88,12 @@ class Router {
     const result = await match.handler(context);
 
     if (!res.writableEnded) {
-      sendJson(res, result.status || 200, result.body || result);
+      sendJson(
+        res,
+        result.status || 200,
+        result.body || result,
+        options.responseHeaders,
+      );
     }
   }
 }

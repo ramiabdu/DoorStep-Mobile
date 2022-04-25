@@ -25,7 +25,13 @@ const request = async (baseUrl, pathName, options = {}) => {
 
 test('DoorStep API supports registration, OTP verification, catalog, and orders', async t => {
   const dataFile = path.join(os.tmpdir(), `doorstep-test-${Date.now()}.json`);
-  const server = http.createServer(createApp({dataFile}));
+  const server = http.createServer(
+    createApp({
+      corsOrigins: ['https://doorstep-mobile.vercel.app'],
+      dataFile,
+      publicBaseUrl: 'https://doorstep-mobile.onrender.com',
+    }),
+  );
   const port = await listen(server);
   const baseUrl = `http://127.0.0.1:${port}`;
 
@@ -34,6 +40,11 @@ test('DoorStep API supports registration, OTP verification, catalog, and orders'
   const health = await request(baseUrl, '/health');
   assert.equal(health.response.status, 200);
   assert.equal(health.body.status, 'ok');
+
+  const docs = await request(baseUrl, '/docs');
+  assert.equal(docs.response.status, 200);
+  assert.equal(docs.body.baseUrl, 'https://doorstep-mobile.onrender.com');
+  assert.ok(docs.body.endpoints.some(endpoint => endpoint.path === '/orders'));
 
   const registered = await request(baseUrl, '/auth/register', {
     method: 'POST',

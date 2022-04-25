@@ -16,3 +16,7 @@ android/app/build/
 
 .DS_Store
 .env
+.env.*
+!.env.example
+!frontend/.env.example
+frontend/dist/
