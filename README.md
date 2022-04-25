@@ -1,76 +1,91 @@
 # DoorStep Full Stack
 
 ![React Native](https://img.shields.io/badge/React%20Native-0.67-61dafb)
-![JavaScript](https://img.shields.io/badge/JavaScript-ES6-f7df1e)
+![React](https://img.shields.io/badge/React-Web%20Demo-177a5b)
+![TypeScript](https://img.shields.io/badge/TypeScript-Frontend-3157a4)
+![Vite](https://img.shields.io/badge/Vite-Production%20Build-646cff)
 ![Node.js](https://img.shields.io/badge/Node.js-API-1b7c5e)
-![Status](https://img.shields.io/badge/status-full%20stack%20prototype-1b7c5e)
+![CI](https://img.shields.io/badge/GitHub%20Actions-frontend%20CI-2088ff)
+![Status](https://img.shields.io/badge/status-production--ready%20portfolio-1b7c5e)
 
-DoorStep is a full stack doorstep delivery prototype. It pairs a React Native customer app with a local Node.js API for account verification, catalog discovery, live delivery quotes, order creation, and customer tracking.
+DoorStep is a production-shaped full-stack doorstep delivery platform. It includes a Node.js API, a React Native mobile client, and a new React + TypeScript + Vite web dashboard for live portfolio demos.
+
+## Live Demo
+
+- Frontend expected URL: `https://doorstep-mobile.vercel.app`
+- Backend API: `https://doorstep-mobile.onrender.com`
+- API health: `https://doorstep-mobile.onrender.com/health`
+- API docs: `https://doorstep-mobile.onrender.com/docs`
 
 ## What This Shows
 
-- React Native screen composition for a mobile-first delivery product
-- Customer onboarding with login, registration, and OTP confirmation
-- API integration with connected/offline states and fallback catalog data
-- Backend routes for health, auth, catalog, quote, order, and tracking flows
-- JSON-backed local persistence without requiring external services
-- Focused backend integration test coverage with Node's built-in test runner
-
-## Product Scope
-
-Implemented:
-
-- Home/dashboard experience with live API status
-- Service catalog and trusted partner cards
-- Register, login, and OTP verification flow
-- Authenticated quote calculation
-- Authenticated order creation
-- Active order tracking timeline
-- Local Node.js backend with structured services and routing
-- Backend integration test for the critical customer flow
-
-Not included yet:
-
-- Real SMS/email provider integration
-- Production database
-- Payment gateway integration
-- Push notifications
-- Native navigation library
-- App store signing/release workflow
+- Full-stack architecture with deployable frontend and backend surfaces
+- React + TypeScript + Vite web dashboard for live demo deployment
+- React Native mobile app for customer delivery flows
+- Node.js API for auth, OTP verification, catalog, quotes, orders, and tracking
+- CORS and production API URLs controlled by environment variables
+- GitHub Actions for frontend lint, typecheck, build, and backend API tests
+- Portfolio-grade documentation for local setup and cloud deployment
 
 ## Architecture
 
 ```text
-.
-|-- App.js
-|-- src/
-|   |-- DoorStepApp.js
-|   |-- api/client.js
-|   |-- components/
-|   |-- data/fallbackCatalog.js
-|   `-- screens/
-|-- backend/
-|   |-- src/
-|   |   |-- server.js
-|   |   |-- routes/
-|   |   |-- services/
-|   |   |-- data/
-|   |   `-- lib/
-|   `-- test/api.test.js
-|-- android/
-|-- ios/
-`-- __tests__/
+frontend/                 React + TypeScript + Vite live demo
+backend/                  Node.js API and service layer
+src/                      React Native mobile app
+android/                  Android native project
+ios/                      iOS native project
+.github/workflows/        CI checks
+DEPLOYMENT.md             Full-stack deployment guide
+FRONTEND_DEPLOYMENT.md    Frontend-specific deployment guide
 ```
 
-The mobile app defaults to:
-
-- Android emulator API URL: `http://10.0.2.2:4000`
-- iOS simulator API URL: `http://localhost:4000`
-- Other runtimes: `http://localhost:4000`
-
-## API Endpoints
+Runtime flow:
 
 ```text
+Vercel or Netlify frontend
+        |
+        | VITE_DOORSTEP_API_URL
+        v
+Render API: https://doorstep-mobile.onrender.com
+        |
+        v
+Auth, catalog, quotes, orders, tracking
+```
+
+There are no shared packages yet. The API exposes its lightweight contract at `/docs`.
+
+## Frontend
+
+The real production web frontend is in `frontend/`.
+
+Key screens:
+
+- Dashboard
+- Login and registration
+- OTP verification
+- API health
+- API docs preview
+- Responsive service catalog
+
+Build commands:
+
+```bash
+cd frontend
+npm install
+npm run config:check
+npm run lint
+npm run typecheck
+npm run build
+```
+
+## Backend
+
+API endpoints:
+
+```text
+GET  /
+GET  /docs
 GET  /health
 POST /auth/register
 POST /auth/login
@@ -90,102 +105,66 @@ Auth-protected order routes expect:
 Authorization: Bearer <token>
 ```
 
-In development, OTP responses include `debug.otp` so the local mobile app can complete verification without an SMS provider.
-
-## Getting Started
-
-Install dependencies:
+Backend test:
 
 ```bash
-yarn install
+node --test backend/test/*.test.js
 ```
 
-Start the API:
+## Environment Variables
 
-```bash
-yarn server
-```
-
-Start Metro in another terminal:
-
-```bash
-yarn start
-```
-
-Run on Android:
-
-```bash
-yarn android
-```
-
-Run on iOS:
-
-```bash
-yarn ios
-```
-
-Run backend tests:
-
-```bash
-yarn server:test
-```
-
-Run React Native tests:
-
-```bash
-yarn test
-```
-
-## Backend Configuration
-
-Optional environment variables:
+Backend:
 
 ```text
-PORT=4000
+NODE_ENV=production
+PORT=10000
 HOST=0.0.0.0
-NODE_ENV=development
-DOORSTEP_DATA_FILE=backend/data/db.json
+PUBLIC_BASE_URL=https://doorstep-mobile.onrender.com
+CORS_ORIGINS=https://doorstep-mobile.vercel.app,https://doorstep-mobile.netlify.app
+DEMO_OTP_ENABLED=true
+DOORSTEP_DATA_FILE=/tmp/doorstep-db.json
 OTP_TTL_MS=300000
 SESSION_TTL_MS=604800000
 ```
 
-The API writes local demo data to `backend/data/db.json`. Delete that file to reset the local database.
+Frontend:
+
+```text
+VITE_DOORSTEP_API_URL=https://doorstep-mobile.onrender.com
+```
+
+## Deployment
+
+- Full-stack guide: [DEPLOYMENT.md](./DEPLOYMENT.md)
+- Frontend guide: [FRONTEND_DEPLOYMENT.md](./FRONTEND_DEPLOYMENT.md)
+- Vercel config: [vercel.json](./vercel.json)
+- Netlify config: [frontend/netlify.toml](./frontend/netlify.toml)
+- CI workflow: [.github/workflows/frontend-ci.yml](./.github/workflows/frontend-ci.yml)
 
 ## Screenshots
 
-Screenshots are not committed yet. Recommended captures:
+Place production screenshots here after deployment:
 
-- Home dashboard
-- Register and OTP flow
-- Quote and order creation
-- Tracking timeline
+```text
+docs/screenshots/dashboard.png
+docs/screenshots/auth-flow.png
+docs/screenshots/api-health.png
+docs/screenshots/mobile-home.png
+```
 
 ## Tech Stack
 
+- React + TypeScript + Vite
 - React Native 0.67
-- React 17
-- JavaScript
-- Node.js HTTP server
-- Node.js built-in test runner
-- JSON local persistence
-- Jest scaffold for React Native
+- Node.js HTTP API
+- JSON persistence for prototype data
+- GitHub Actions
+- Vercel or Netlify frontend hosting
+- Render backend hosting
 
-## Portfolio Note
+## Production Notes
 
-This repository is still a prototype, but the implementation is intentionally structured like a production seed: clear API boundaries, service-level backend logic, persistent local state, mobile client error states, and a complete customer journey.
-
-## Roadmap
-
-- Replace local JSON storage with Postgres or MongoDB
-- Add SMS/email OTP provider
-- Add payment authorization and receipt generation
-- Add courier/admin operations screens
-- Add push notifications and background order refresh
-- Add screenshots and a short mobile walkthrough GIF
-
-## Contributing
-
-This is a portfolio prototype. Small fixes should include a short explanation and a working local run path.
+This project is deployable and portfolio-grade, but a commercial production version should replace local JSON persistence with a managed database, add real SMS/email OTP delivery, add payment processing, and introduce structured logging, rate limiting, and managed secrets.
 
 ## License
 
