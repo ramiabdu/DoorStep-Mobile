@@ -1,4 +1,10 @@
-import React, {FormEvent, useEffect, useMemo, useState} from 'react';
+import React, {
+  FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {createRoot} from 'react-dom/client';
 import {
   Activity,
@@ -45,7 +51,7 @@ const App = () => {
   const [token, setToken] = useState<string | null>(null);
   const [verification, setVerification] = useState<AuthResponse | null>(null);
 
-  const loadPlatform = async () => {
+  const loadPlatform = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -67,11 +73,11 @@ const App = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    loadPlatform();
-  }, []);
+    void loadPlatform();
+  }, [loadPlatform]);
 
   const heroStats = useMemo(
     () => [
