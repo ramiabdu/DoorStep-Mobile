@@ -12,7 +12,8 @@ DoorStep is a production-shaped full-stack doorstep delivery platform. It includ
 
 ## Live Demo
 
-- Frontend expected URL: `https://doorstep-mobile.vercel.app`
+- Frontend live demo: `https://ramiabdu.github.io/DoorStep-Mobile/`
+- Vercel target URL: `https://doorstep-mobile.vercel.app`
 - Backend API: `https://doorstep-mobile.onrender.com`
 - API health: `https://doorstep-mobile.onrender.com/health`
 - API docs: `https://doorstep-mobile.onrender.com/docs`

@@ -84,6 +84,17 @@ Expected frontend URL:
 https://doorstep-mobile.vercel.app
 ```
 
+## Deploy To GitHub Pages
+
+The repository includes `.github/workflows/pages.yml`, which deploys the
+frontend automatically after `Frontend CI` succeeds on `main`.
+
+Expected GitHub Pages URL:
+
+```text
+https://ramiabdu.github.io/DoorStep-Mobile/
+```
+
 ## Deploy To Netlify
 
 Recommended Netlify settings:
