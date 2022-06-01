@@ -1,45 +1,22 @@
 {
-  "name": "doorstep",
-  "version": "0.0.1",
+  "name": "doorstep-mobile",
+  "version": "1.0.0",
   "private": true,
-  "engines": {
-    "node": ">=22"
-  },
+  "description": "Production-ready full-stack delivery platform built with React, TypeScript, Express, and PostgreSQL.",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
   "scripts": {
-    "android": "react-native run-android",
-    "build": "npm --prefix frontend run build",
-    "frontend:build": "npm --prefix frontend run build",
-    "frontend:dev": "npm --prefix frontend run dev",
-    "frontend:lint": "npm --prefix frontend run lint",
-    "frontend:typecheck": "npm --prefix frontend run typecheck",
-    "ios": "react-native run-ios",
-    "server": "node backend/src/server.js",
-    "server:test": "node --test backend/test/*.test.js",
-    "start": "react-native start",
-    "test": "jest",
-    "vercel-build": "npm --prefix frontend run build",
-    "lint": "eslint ."
+    "dev": "docker compose up --build",
+    "dev:api": "npm run dev --workspace @doorstep/backend",
+    "dev:web": "npm run dev --workspace @doorstep/frontend",
+    "lint": "npm run lint --workspace @doorstep/backend && npm run lint --workspace @doorstep/frontend",
+    "typecheck": "npm run typecheck --workspace @doorstep/backend && npm run typecheck --workspace @doorstep/frontend",
+    "build": "npm run build --workspace @doorstep/backend && npm run build --workspace @doorstep/frontend",
+    "test": "npm run test --workspace @doorstep/backend"
   },
-  "dependencies": {
-    "add": "^2.0.6",
-    "react": "17.0.2",
-    "react-native": "0.67.1",
-    "react-native-confirmation-code-field": "^7.3.0",
-    "react-native-keyboard-aware-scroll-view": "^0.9.5",
-    "react-native-svg": "^12.1.1",
-    "yarn": "^1.22.17"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.12.9",
-    "@babel/runtime": "^7.12.5",
-    "@react-native-community/eslint-config": "^2.0.0",
-    "babel-jest": "^26.6.3",
-    "eslint": "7.14.0",
-    "jest": "^26.6.3",
-    "metro-react-native-babel-preset": "^0.66.2",
-    "react-test-renderer": "17.0.2"
-  },
-  "jest": {
-    "preset": "react-native"
+  "engines": {
+    "node": ">=20"
   }
 }
