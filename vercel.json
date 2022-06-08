@@ -1,11 +1,8 @@
 {
-  "framework": "vite",
-  "installCommand": "npm --prefix frontend install",
-  "buildCommand": "npm --prefix frontend run build",
+  "installCommand": "npm install",
+  "buildCommand": "npm run build --workspace @doorstep/frontend",
   "outputDirectory": "frontend/dist",
-  "env": {
-    "VITE_DOORSTEP_API_URL": "https://doorstep-mobile.onrender.com"
-  },
+  "framework": "vite",
   "rewrites": [
     {
       "source": "/(.*)",

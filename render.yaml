@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: doorstep-mobile-api
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: doorstep-mobile-postgres
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: CORS_ORIGIN
+        value: https://doorstep-mobile.vercel.app
+
+databases:
+  - name: doorstep-mobile-postgres
+    plan: free
+
