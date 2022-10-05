@@ -1,11 +1,8 @@
 [build]
-command = "npm run build"
-publish = "dist"
-
-[build.environment]
-VITE_DOORSTEP_API_URL = "https://doorstep-mobile.onrender.com"
+  command = "npm run build"
+  publish = "dist"
 
 [[redirects]]
-from = "/*"
-to = "/index.html"
-status = 200
+  from = "/*"
+  to = "/index.html"
+  status = 200
