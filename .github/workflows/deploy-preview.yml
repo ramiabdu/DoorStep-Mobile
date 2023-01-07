@@ -1,0 +1,30 @@
+name: Deployment Readiness
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "render.yaml"
+      - "vercel.json"
+      - "docker-compose.yml"
+      - "backend/Dockerfile"
+      - "frontend/Dockerfile"
+
+jobs:
+  validate-deployment-files:
+    name: Validate deployment configuration
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate required files
+        run: |
+          test -f render.yaml
+          test -f vercel.json
+          test -f backend/Dockerfile
+          test -f frontend/Dockerfile
+          test -f docker-compose.yml
+
