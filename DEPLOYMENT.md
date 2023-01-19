@@ -1,185 +1,110 @@
-# DoorStep Deployment Guide
+# Deployment Guide
 
-This guide covers the production deployment shape for the DoorStep full-stack project: a Node.js API on Render and a Vite React frontend on Vercel or Netlify.
+This project is deployable as two independent production services:
 
-## Architecture Overview
+- Backend API on Render.
+- Frontend web app on Vercel.
 
-```text
-Browser / Mobile Client
-        |
-        | HTTPS
-        v
-Vercel or Netlify frontend
-        |
-        | VITE_DOORSTEP_API_URL
-        v
-Render API: https://doorstep-mobile.onrender.com
-        |
-        v
-JSON persistence file for prototype data
+## Local Production Check
+
+```bash
+npm install
+npm run lint
+npm run typecheck
+npm run test
+npm run build
 ```
 
-Project areas:
+## Backend on Render
 
-- `backend/`: Node.js HTTP API, services, routing, CORS, auth, catalog, orders, and integration tests.
-- `frontend/`: React + TypeScript + Vite web dashboard for the live demo.
-- `src/`: React Native mobile client.
-- `android/` and `ios/`: native React Native projects.
-- `.github/workflows/`: CI checks for backend and frontend.
+Create a new Render Blueprint from `render.yaml`, or configure the service manually.
 
-There are no shared package workspaces yet. Shared contracts are intentionally small and documented through `/docs` on the API.
+Exact Render settings:
 
-## Backend Deployment On Render
+| Setting | Value |
+| --- | --- |
+| Service type | Web Service |
+| Root directory | `backend` |
+| Runtime | Node |
+| Build command | `npm install && npm run build` |
+| Start command | `npm run start` |
+| Health check path | `/health` |
+| Node version | `22` |
 
-Create a new Render Web Service from this repository.
+Environment variables:
 
-Recommended settings:
-
-```text
-Environment: Node
-Build Command: echo "No backend build required"
-Start Command: node backend/src/server.js
-Health Check Path: /health
-```
-
-Required environment variables:
-
-```text
+```bash
 NODE_ENV=production
 PORT=10000
-HOST=0.0.0.0
-PUBLIC_BASE_URL=https://doorstep-mobile.onrender.com
-CORS_ORIGINS=https://doorstep-mobile.vercel.app,https://doorstep-mobile.netlify.app
-DEMO_OTP_ENABLED=true
+DATABASE_URL=<Render PostgreSQL connection string>
+JWT_SECRET=<generated secure secret>
+JWT_EXPIRES_IN=7d
+CORS_ORIGIN=https://doorstep-mobile.vercel.app
+DATA_DRIVER=postgres
+LOG_LEVEL=info
 ```
 
-Optional environment variables:
+After the PostgreSQL database is created, run the schema once:
 
-```text
-DOORSTEP_DATA_FILE=/tmp/doorstep-db.json
-OTP_TTL_MS=300000
-SESSION_TTL_MS=604800000
+```bash
+cd backend
+npm run db:schema
 ```
 
-For a real production system, replace JSON file persistence with a managed database. Render ephemeral files can reset between deploys.
+Render may run this command from a shell using the production `DATABASE_URL`.
 
-## Frontend Deployment
+## Frontend on Vercel
 
-The frontend is in `frontend/` and uses:
+Exact Vercel settings:
 
-```text
+| Setting | Value |
+| --- | --- |
+| Framework preset | Vite |
+| Root directory | repository root or `frontend` |
+| Install command | `npm install` |
+| Build command from root | `npm run build --workspace @doorstep/frontend` |
+| Output directory from root | `frontend/dist` |
+| Build command from frontend root | `npm run build` |
+| Output directory from frontend root | `dist` |
+
+Environment variable:
+
+```bash
 VITE_DOORSTEP_API_URL=https://doorstep-mobile.onrender.com
 ```
 
-Vercel can deploy from the repository root using `vercel.json`.
-
-Netlify can deploy from the `frontend/` directory using `frontend/netlify.toml`.
-
-See [FRONTEND_DEPLOYMENT.md](./FRONTEND_DEPLOYMENT.md) for exact frontend steps.
-
-## Local Setup
-
-Backend:
-
-```bash
-node backend/src/server.js
-```
-
-Backend test:
-
-```bash
-node --test backend/test/*.test.js
-```
-
-Frontend:
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Root Vercel build parity:
-
-```bash
-npm run build
-```
-
-Mobile:
-
-```bash
-yarn install
-yarn start
-yarn ios
-```
-
-The current desktop environment used for this update has `node` available but not `npm` or `yarn`, so dependency installation and the Vite build must run in CI or a normal Node toolchain.
-
-## API Documentation
-
-Production API docs:
-
-```text
-https://doorstep-mobile.onrender.com/docs
-```
-
-Health check:
-
-```text
-https://doorstep-mobile.onrender.com/health
-```
-
-Auth-protected routes use:
-
-```text
-Authorization: Bearer <token>
-```
+The root `vercel.json` supports repository-root deployment. The `frontend/vercel.json` supports selecting `frontend` as the Vercel root.
 
 ## CORS
 
-The API reads allowed origins from `CORS_ORIGINS`.
+Set backend `CORS_ORIGIN` to the deployed frontend URL:
 
-Use comma-separated frontend origins:
-
-```text
-CORS_ORIGINS=https://doorstep-mobile.vercel.app,https://doorstep-mobile.netlify.app
+```bash
+CORS_ORIGIN=https://doorstep-mobile.vercel.app
 ```
 
-For quick prototype testing only:
+For multiple origins:
 
-```text
-CORS_ORIGINS=*
+```bash
+CORS_ORIGIN=https://doorstep-mobile.vercel.app,http://localhost:5173
 ```
 
-## Deployment Verification
+## Docker Deployment
 
-After backend deploy:
+```bash
+cp .env.example .env
+docker compose up --build
+```
+
+Services:
+
+- PostgreSQL: `localhost:5432`
+- Backend: `http://localhost:4000`
+- Frontend: `http://localhost:5173`
+
+## Smoke Tests
 
 ```bash
 curl https://doorstep-mobile.onrender.com/health
-curl https://doorstep-mobile.onrender.com/docs
+curl https://doorstep-mobile.onrender.com/api/openapi.json
 ```
-
-After frontend deploy:
-
-```bash
-cd frontend
-npm run config:check
-npm run typecheck
-npm run build
-```
-
-GitHub Actions also runs frontend lint, typecheck, build, and backend integration tests on pushes and pull requests.
-
-## Production Gaps
-
-The current implementation is portfolio-grade and deployable, but a real commercial deployment should add:
-
-- Managed database
-- Real SMS or email OTP delivery
-- Payment provider integration
-- Structured logging and tracing
-- Secrets manager
-- Rate limiting
-- Persistent session storage
-- Admin and courier operations surfaces
