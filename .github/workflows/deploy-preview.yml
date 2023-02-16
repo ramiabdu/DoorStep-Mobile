@@ -27,4 +27,3 @@ jobs:
           test -f backend/Dockerfile
           test -f frontend/Dockerfile
           test -f docker-compose.yml
-

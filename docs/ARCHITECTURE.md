@@ -58,4 +58,3 @@ This keeps route behavior testable without requiring a database for every test.
 - Render deploys the backend from `backend/dist`.
 - PostgreSQL is managed by Render or any compatible provider.
 - Docker Compose runs the full stack locally.
-

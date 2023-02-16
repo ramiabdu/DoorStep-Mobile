@@ -11,4 +11,3 @@
 - Added Docker, docker-compose, Render, and Vercel deployment support.
 - Added GitHub Actions for frontend and backend quality checks.
 - Added professional README, deployment, architecture, API, security, and contribution docs.
-

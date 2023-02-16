@@ -152,4 +152,3 @@ class ApiClient {
 
 export const api = new ApiClient(API_URL);
 export {API_URL};
-

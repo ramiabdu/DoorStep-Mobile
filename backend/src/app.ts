@@ -61,4 +61,3 @@ export const createApp = (repository: DoorstepRepository = createRepository()) =
 
   return app;
 };
-

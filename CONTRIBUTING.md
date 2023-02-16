@@ -34,4 +34,3 @@ Use concise conventional commits:
 - Environment variables are documented.
 - Tests or verification notes are included.
 - CI passes.
-

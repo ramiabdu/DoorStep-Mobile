@@ -91,4 +91,3 @@ export interface AdminOverview {
   revenueCents: number;
   restaurantsOnline: number;
 }
-

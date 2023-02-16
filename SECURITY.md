@@ -24,4 +24,3 @@ Open a private security advisory or contact the maintainer directly. Do not publ
 - Limit `CORS_ORIGIN` to deployed frontend domains.
 - Rotate credentials if a `.env` file is exposed.
 - Enable platform logs and alerting for failed authentication spikes.
-

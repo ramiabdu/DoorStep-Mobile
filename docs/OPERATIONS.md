@@ -30,4 +30,3 @@ npm run db:schema
 - Backend health: `/health`
 - Swagger UI: `/api/docs`
 - OpenAPI JSON: `/api/openapi.json`
-

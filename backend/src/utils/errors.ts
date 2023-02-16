@@ -25,4 +25,3 @@ export const notFound = (message = 'Resource was not found') =>
 
 export const conflict = (message: string) =>
   new ApiError(409, 'CONFLICT', message);
-

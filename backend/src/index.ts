@@ -7,4 +7,3 @@ const app = createApp();
 app.listen(env.PORT, () => {
   logger.info({port: env.PORT}, 'DoorStep Mobile API is running');
 });
-

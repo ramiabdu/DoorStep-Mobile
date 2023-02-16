@@ -13,4 +13,3 @@ Recommended dimensions:
 
 - Desktop: `1440x1000`
 - Mobile: `390x844`
-

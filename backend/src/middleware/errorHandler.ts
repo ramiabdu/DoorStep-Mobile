@@ -35,4 +35,3 @@ export const errorHandler: ErrorRequestHandler = (error, _request, response, _ne
     }
   });
 };
-

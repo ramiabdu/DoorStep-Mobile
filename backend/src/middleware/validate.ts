@@ -14,4 +14,3 @@ export const validate =
     request.query = parsed.query ?? request.query;
     next();
   };
-

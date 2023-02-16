@@ -18,4 +18,3 @@ COPY --from=build /app/dist ./dist
 COPY src/db/schema.sql ./src/db/schema.sql
 EXPOSE 4000
 CMD ["npm", "run", "start"]
-

@@ -62,4 +62,3 @@ export const createAuthRouter = (repository: DoorstepRepository) => {
 
   return router;
 };
-

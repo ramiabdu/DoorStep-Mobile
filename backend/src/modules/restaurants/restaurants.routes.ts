@@ -53,4 +53,3 @@ export const createRestaurantsRouter = (repository: DoorstepRepository) => {
 
   return router;
 };
-

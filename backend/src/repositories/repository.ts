@@ -38,4 +38,3 @@ export interface DoorstepRepository {
   updateOrderStatus(orderId: string, status: OrderStatus): Promise<Order>;
   adminOverview(): Promise<AdminOverview>;
 }
-

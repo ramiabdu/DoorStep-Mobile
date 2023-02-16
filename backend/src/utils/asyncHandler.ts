@@ -6,4 +6,3 @@ export const asyncHandler =
   (handler: AsyncRoute) => (request: Request, response: Response, next: NextFunction) => {
     void handler(request, response, next).catch(next);
   };
-

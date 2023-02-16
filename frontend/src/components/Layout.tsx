@@ -70,4 +70,3 @@ export const AppLayout = () => {
     </div>
   );
 };
-

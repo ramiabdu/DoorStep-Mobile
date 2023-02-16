@@ -16,4 +16,3 @@ export const requestLogger = pinoHttp({
     return 'info';
   }
 });
-

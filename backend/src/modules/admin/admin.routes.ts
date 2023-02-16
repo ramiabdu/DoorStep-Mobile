@@ -47,4 +47,3 @@ export const createAdminRouter = (repository: DoorstepRepository) => {
 
   return router;
 };
-

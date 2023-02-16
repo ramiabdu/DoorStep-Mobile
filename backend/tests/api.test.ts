@@ -66,4 +66,3 @@ describe('DoorStep API', () => {
       .expect(403);
   });
 });
-

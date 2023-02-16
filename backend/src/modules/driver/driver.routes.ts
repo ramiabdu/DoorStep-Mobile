@@ -39,4 +39,3 @@ export const createDriverRouter = (repository: DoorstepRepository) => {
 
   return router;
 };
-

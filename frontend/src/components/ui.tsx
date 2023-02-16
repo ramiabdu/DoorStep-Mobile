@@ -81,4 +81,3 @@ export const ErrorBanner = ({message}: {message: string}) => (
     {message}
   </div>
 );
-
