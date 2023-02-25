@@ -4,8 +4,9 @@ import {Link} from 'react-router-dom';
 
 import {api} from '../api/client';
 import type {Order, OrderStatus} from '../api/types';
-import {Card, EmptyState, LoadingState, formatMoney, statusLabel} from '../components/ui';
-import {useAuth} from '../state/auth';
+import {Card, EmptyState, LoadingState} from '../components/ui';
+import {useAuth} from '../state/useAuth';
+import {formatMoney, statusLabel} from '../utils/format';
 
 const steps: OrderStatus[] = ['placed', 'confirmed', 'preparing', 'ready', 'assigned', 'picked_up', 'delivered'];
 

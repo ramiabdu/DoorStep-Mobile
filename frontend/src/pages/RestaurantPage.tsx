@@ -4,8 +4,9 @@ import {Link, useParams} from 'react-router-dom';
 
 import {api} from '../api/client';
 import type {MenuItem, Restaurant} from '../api/types';
-import {Button, Card, EmptyState, LoadingState, formatMoney} from '../components/ui';
-import {useCart} from '../state/cart';
+import {Button, Card, EmptyState, LoadingState} from '../components/ui';
+import {useCart} from '../state/useCart';
+import {formatMoney} from '../utils/format';
 
 export const RestaurantPage = () => {
   const {restaurantId} = useParams();

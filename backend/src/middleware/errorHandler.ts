@@ -5,6 +5,7 @@ import {ApiError} from '../utils/errors.js';
 import {logger} from '../utils/logger.js';
 
 export const errorHandler: ErrorRequestHandler = (error, _request, response, _next) => {
+  void _next;
   if (error instanceof ZodError) {
     response.status(400).json({
       error: {

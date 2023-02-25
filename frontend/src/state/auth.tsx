@@ -1,20 +1,9 @@
-import {createContext, useCallback, useContext, useEffect, useMemo, useState} from 'react';
+import {useCallback, useEffect, useMemo, useState} from 'react';
 import type {ReactNode} from 'react';
 
 import {api} from '../api/client';
-import type {AuthResponse, User, UserRole} from '../api/types';
-
-interface AuthContextValue {
-  user: User | null;
-  token: string | null;
-  isReady: boolean;
-  login: (input: {email: string; password: string}) => Promise<void>;
-  signup: (input: {name: string; email: string; password: string; role: UserRole}) => Promise<void>;
-  logout: () => void;
-}
-
-const TOKEN_KEY = 'doorstep_token';
-const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+import type {AuthResponse, UserRole} from '../api/types';
+import {AuthContext, TOKEN_KEY} from './authContext';
 
 export const AuthProvider = ({children}: {children: ReactNode}) => {
   const [token, setToken] = useState<string | null>(() => localStorage.getItem(TOKEN_KEY));
@@ -94,13 +83,4 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
-
-export const useAuth = () => {
-  const value = useContext(AuthContext);
-  if (!value) {
-    throw new Error('useAuth must be used inside AuthProvider');
-  }
-
-  return value;
 };

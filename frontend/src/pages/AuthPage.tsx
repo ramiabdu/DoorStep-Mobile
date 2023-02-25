@@ -4,7 +4,7 @@ import {useNavigate} from 'react-router-dom';
 
 import type {UserRole} from '../api/types';
 import {Button, Card, ErrorBanner, Field} from '../components/ui';
-import {useAuth} from '../state/auth';
+import {useAuth} from '../state/useAuth';
 
 const demoAccounts = [
   {label: 'Customer', email: 'customer@doorstep.dev', role: 'customer'},

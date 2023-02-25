@@ -4,8 +4,9 @@ import {Link} from 'react-router-dom';
 
 import {api} from '../api/client';
 import type {Restaurant} from '../api/types';
-import {Card, EmptyState, LoadingState, formatMoney} from '../components/ui';
-import {useCart} from '../state/cart';
+import {Card, EmptyState, LoadingState} from '../components/ui';
+import {useCart} from '../state/useCart';
+import {formatMoney} from '../utils/format';
 
 export const CustomerDashboard = () => {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);

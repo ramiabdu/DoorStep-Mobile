@@ -1,8 +1,8 @@
 import {Link, NavLink, Outlet, useNavigate} from 'react-router-dom';
 import {Bike, LayoutDashboard, LogOut, PackageCheck, ShieldCheck, ShoppingBag} from 'lucide-react';
 
-import {useAuth} from '../state/auth';
-import {useCart} from '../state/cart';
+import {useAuth} from '../state/useAuth';
+import {useCart} from '../state/useCart';
 import {Button} from './ui';
 
 export const AppLayout = () => {

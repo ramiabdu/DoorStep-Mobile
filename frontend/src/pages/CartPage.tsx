@@ -5,9 +5,10 @@ import {Link, useNavigate} from 'react-router-dom';
 
 import {api} from '../api/client';
 import type {Order} from '../api/types';
-import {Button, Card, EmptyState, Field, LoadingState, formatMoney} from '../components/ui';
-import {useAuth} from '../state/auth';
-import {useCart} from '../state/cart';
+import {Button, Card, EmptyState, Field, LoadingState} from '../components/ui';
+import {useAuth} from '../state/useAuth';
+import {useCart} from '../state/useCart';
+import {formatMoney} from '../utils/format';
 
 export const CartPage = () => {
   const navigate = useNavigate();

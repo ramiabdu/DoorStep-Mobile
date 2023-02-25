@@ -10,8 +10,9 @@ import {HealthPage} from './pages/HealthPage';
 import {LandingPage} from './pages/LandingPage';
 import {RestaurantPage} from './pages/RestaurantPage';
 import {TrackingPage} from './pages/TrackingPage';
-import {AuthProvider, useAuth} from './state/auth';
+import {AuthProvider} from './state/auth';
 import {CartProvider} from './state/cart';
+import {useAuth} from './state/useAuth';
 
 const AppRoutes = () => {
   const {isReady} = useAuth();
