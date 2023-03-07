@@ -2,7 +2,7 @@ import {useCallback, useEffect, useMemo, useState} from 'react';
 import type {ReactNode} from 'react';
 
 import {api} from '../api/client';
-import type {AuthResponse, UserRole} from '../api/types';
+import type {AuthResponse, User, UserRole} from '../api/types';
 import {AuthContext, TOKEN_KEY} from './authContext';
 
 export const AuthProvider = ({children}: {children: ReactNode}) => {

@@ -2,6 +2,7 @@ import {useCallback, useMemo, useState} from 'react';
 import type {ReactNode} from 'react';
 
 import {api} from '../api/client';
+import type {Cart} from '../api/types';
 import {CartContext} from './cartContext';
 import {useAuth} from './useAuth';
 
