@@ -1,4 +1,4 @@
-import {ArrowRight, Clock, MapPin, ShieldCheck, Star, Truck} from 'lucide-react';
+import {ArrowRight, Clock, MapPin, ShieldCheck, Truck} from 'lucide-react';
 import {Link} from 'react-router-dom';
 
 import {API_URL} from '../api/client';
@@ -73,30 +73,5 @@ export const LandingPage = () => (
       </div>
     </section>
 
-    <section className="section-grid reverse">
-      <div className="delivery-visual" aria-label="Live delivery operations preview">
-        <div className="map-card">
-          <span className="map-pin pin-a" />
-          <span className="map-pin pin-b" />
-          <span className="map-pin pin-c" />
-          <div className="route-line" />
-          <div className="dispatch-card">
-            <Star size={16} />
-            <div>
-              <strong>Urban Pizza Works</strong>
-              <span>Driver assigned in 4 min</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div>
-        <span className="eyebrow">Senior-level delivery</span>
-        <h2>Clean architecture from browser to database.</h2>
-        <p>
-          The app is separated into frontend, backend, docs, Docker, and CI workflows so it
-          looks polished on GitHub and can be deployed without manual rewrites.
-        </p>
-      </div>
-    </section>
   </>
 );
