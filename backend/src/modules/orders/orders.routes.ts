@@ -6,6 +6,7 @@ import {validate} from '../../middleware/validate.js';
 import type {DoorstepRepository} from '../../repositories/repository.js';
 import {asyncHandler} from '../../utils/asyncHandler.js';
 import {forbidden, notFound} from '../../utils/errors.js';
+import {getStringValue} from '../../utils/requestValues.js';
 
 const checkoutSchema = z.object({
   body: z.object({
@@ -38,9 +39,11 @@ export const createOrdersRouter = (repository: DoorstepRepository) => {
     authorize('customer'),
     validate(checkoutSchema),
     asyncHandler(async (request, response) => {
+      const userId = getStringValue(request.user?.id, 'userId');
+      const deliveryAddress = getStringValue(request.body.deliveryAddress, 'deliveryAddress');
       const order = await repository.createOrderFromCart(
-        request.user?.id ?? '',
-        request.body.deliveryAddress
+        userId,
+        deliveryAddress
       );
       response.status(201).json({order});
     })
@@ -50,7 +53,8 @@ export const createOrdersRouter = (repository: DoorstepRepository) => {
     '/:orderId',
     validate(orderParamsSchema),
     asyncHandler(async (request, response) => {
-      const order = await repository.getOrder(request.params.orderId);
+      const orderId = getStringValue(request.params.orderId, 'orderId');
+      const order = await repository.getOrder(orderId);
       if (!order) {
         throw notFound('Order not found');
       }

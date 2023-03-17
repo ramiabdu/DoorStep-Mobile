@@ -4,7 +4,9 @@ import {z} from 'zod';
 import {authenticate, authorize} from '../../middleware/auth.js';
 import {validate} from '../../middleware/validate.js';
 import type {DoorstepRepository} from '../../repositories/repository.js';
+import type {OrderStatus} from '../../types/domain.js';
 import {asyncHandler} from '../../utils/asyncHandler.js';
+import {getStringValue} from '../../utils/requestValues.js';
 
 const statusSchema = z.object({
   params: z.object({
@@ -32,7 +34,9 @@ export const createDriverRouter = (repository: DoorstepRepository) => {
     '/orders/:orderId/status',
     validate(statusSchema),
     asyncHandler(async (request, response) => {
-      const order = await repository.updateOrderStatus(request.params.orderId, request.body.status);
+      const orderId = getStringValue(request.params.orderId, 'orderId');
+      const status = getStringValue(request.body.status, 'status') as OrderStatus;
+      const order = await repository.updateOrderStatus(orderId, status);
       response.json({order});
     })
   );

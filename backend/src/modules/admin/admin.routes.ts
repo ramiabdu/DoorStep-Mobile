@@ -5,6 +5,7 @@ import {authenticate, authorize} from '../../middleware/auth.js';
 import {validate} from '../../middleware/validate.js';
 import type {DoorstepRepository} from '../../repositories/repository.js';
 import {asyncHandler} from '../../utils/asyncHandler.js';
+import {getStringValue} from '../../utils/requestValues.js';
 
 const assignSchema = z.object({
   params: z.object({
@@ -40,7 +41,9 @@ export const createAdminRouter = (repository: DoorstepRepository) => {
     '/orders/:orderId/assign',
     validate(assignSchema),
     asyncHandler(async (request, response) => {
-      const order = await repository.assignOrder(request.params.orderId, request.body.driverId);
+      const orderId = getStringValue(request.params.orderId, 'orderId');
+      const driverId = getStringValue(request.body.driverId, 'driverId');
+      const order = await repository.assignOrder(orderId, driverId);
       response.json({order});
     })
   );

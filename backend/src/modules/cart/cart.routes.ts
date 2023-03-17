@@ -5,6 +5,7 @@ import {authenticate, authorize} from '../../middleware/auth.js';
 import {validate} from '../../middleware/validate.js';
 import type {DoorstepRepository} from '../../repositories/repository.js';
 import {asyncHandler} from '../../utils/asyncHandler.js';
+import {getNumberValue, getStringValue} from '../../utils/requestValues.js';
 
 const addItemSchema = z.object({
   body: z.object({
@@ -39,10 +40,13 @@ export const createCartRouter = (repository: DoorstepRepository) => {
     '/items',
     validate(addItemSchema),
     asyncHandler(async (request, response) => {
+      const userId = getStringValue(request.user?.id, 'userId');
+      const menuItemId = getStringValue(request.body.menuItemId, 'menuItemId');
+      const quantity = getNumberValue(request.body.quantity, 'quantity');
       const cart = await repository.addCartItem(
-        request.user?.id ?? '',
-        request.body.menuItemId,
-        request.body.quantity
+        userId,
+        menuItemId,
+        quantity
       );
       response.status(201).json({cart});
     })
@@ -52,10 +56,13 @@ export const createCartRouter = (repository: DoorstepRepository) => {
     '/items/:itemId',
     validate(updateItemSchema),
     asyncHandler(async (request, response) => {
+      const userId = getStringValue(request.user?.id, 'userId');
+      const itemId = getStringValue(request.params.itemId, 'itemId');
+      const quantity = getNumberValue(request.body.quantity, 'quantity');
       const cart = await repository.updateCartItem(
-        request.user?.id ?? '',
-        request.params.itemId,
-        request.body.quantity
+        userId,
+        itemId,
+        quantity
       );
       response.json({cart});
     })

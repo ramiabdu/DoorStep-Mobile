@@ -5,6 +5,7 @@ import {validate} from '../../middleware/validate.js';
 import type {DoorstepRepository} from '../../repositories/repository.js';
 import {asyncHandler} from '../../utils/asyncHandler.js';
 import {notFound} from '../../utils/errors.js';
+import {getStringValue} from '../../utils/requestValues.js';
 
 const paramsSchema = z.object({
   params: z.object({
@@ -27,7 +28,8 @@ export const createRestaurantsRouter = (repository: DoorstepRepository) => {
     '/:restaurantId',
     validate(paramsSchema),
     asyncHandler(async (request, response) => {
-      const restaurant = await repository.getRestaurant(request.params.restaurantId);
+      const restaurantId = getStringValue(request.params.restaurantId, 'restaurantId');
+      const restaurant = await repository.getRestaurant(restaurantId);
       if (!restaurant) {
         throw notFound('Restaurant not found');
       }
@@ -41,7 +43,8 @@ export const createRestaurantsRouter = (repository: DoorstepRepository) => {
     '/:restaurantId/menu',
     validate(paramsSchema),
     asyncHandler(async (request, response) => {
-      const restaurant = await repository.getRestaurant(request.params.restaurantId);
+      const restaurantId = getStringValue(request.params.restaurantId, 'restaurantId');
+      const restaurant = await repository.getRestaurant(restaurantId);
       if (!restaurant) {
         throw notFound('Restaurant not found');
       }
