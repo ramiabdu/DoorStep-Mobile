@@ -1,134 +1,84 @@
 import bcrypt from 'bcryptjs';
 import {randomUUID} from 'node:crypto';
 
+import {categories, coupons, demoAddresses, demoNotifications, demoPayments, products, reviews, stores} from '../shared/marketplaceData.js';
 import type {
+  Address,
   AdminOverview,
+  AnalyticsOverview,
   Cart,
   CartItem,
+  Category,
+  Coupon,
   MenuItem,
+  Notification,
   Order,
   OrderItem,
   OrderStatus,
+  PaymentMethod,
+  Product,
+  ProductFilters,
   Restaurant,
+  Review,
+  Store,
+  StoreFilters,
   StoredUser,
   User
 } from '../types/domain.js';
 import {badRequest, conflict, notFound} from '../utils/errors.js';
-import type {CreateUserInput, DoorstepRepository} from './repository.js';
+import type {CreateAddressInput, CreateReviewInput, CreateUserInput, DoorstepRepository} from './repository.js';
 
 const now = () => new Date().toISOString();
-
-const restaurants: Restaurant[] = [
-  {
-    id: 'rest-green-bowl',
-    name: 'Green Bowl Kitchen',
-    cuisine: 'Healthy bowls',
-    rating: 4.8,
-    deliveryTimeMinutes: 24,
-    deliveryFeeCents: 299,
-    heroImageUrl: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=80',
-    isOpen: true
-  },
-  {
-    id: 'rest-urban-pizza',
-    name: 'Urban Pizza Works',
-    cuisine: 'Wood-fired pizza',
-    rating: 4.7,
-    deliveryTimeMinutes: 31,
-    deliveryFeeCents: 349,
-    heroImageUrl: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80',
-    isOpen: true
-  },
-  {
-    id: 'rest-noodle-lab',
-    name: 'Noodle Lab',
-    cuisine: 'Asian fusion',
-    rating: 4.9,
-    deliveryTimeMinutes: 28,
-    deliveryFeeCents: 399,
-    heroImageUrl: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=1200&q=80',
-    isOpen: true
-  }
-];
-
-const menuItems: MenuItem[] = [
-  {
-    id: 'item-harvest-bowl',
-    restaurantId: 'rest-green-bowl',
-    name: 'Harvest Protein Bowl',
-    description: 'Quinoa, roasted vegetables, herb chicken, avocado, and citrus tahini.',
-    priceCents: 1499,
-    imageUrl: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=900&q=80',
-    isAvailable: true
-  },
-  {
-    id: 'item-salmon-bowl',
-    restaurantId: 'rest-green-bowl',
-    name: 'Salmon Market Bowl',
-    description: 'Seared salmon, brown rice, cucumber, edamame, and ginger dressing.',
-    priceCents: 1799,
-    imageUrl: 'https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?auto=format&fit=crop&w=900&q=80',
-    isAvailable: true
-  },
-  {
-    id: 'item-margherita',
-    restaurantId: 'rest-urban-pizza',
-    name: 'Margherita Classica',
-    description: 'San Marzano tomato, mozzarella, basil, and olive oil.',
-    priceCents: 1399,
-    imageUrl: 'https://images.unsplash.com/photo-1604382355076-af4b0eb60143?auto=format&fit=crop&w=900&q=80',
-    isAvailable: true
-  },
-  {
-    id: 'item-truffle-pizza',
-    restaurantId: 'rest-urban-pizza',
-    name: 'Truffle Mushroom Pie',
-    description: 'Wild mushrooms, truffle cream, aged mozzarella, and thyme.',
-    priceCents: 1899,
-    imageUrl: 'https://images.unsplash.com/photo-1594007654729-407eedc4be65?auto=format&fit=crop&w=900&q=80',
-    isAvailable: true
-  },
-  {
-    id: 'item-ramen',
-    restaurantId: 'rest-noodle-lab',
-    name: 'Shoyu Ramen',
-    description: 'Chicken broth, ramen noodles, egg, nori, scallions, and bamboo shoots.',
-    priceCents: 1599,
-    imageUrl: 'https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?auto=format&fit=crop&w=900&q=80',
-    isAvailable: true
-  },
-  {
-    id: 'item-dan-dan',
-    restaurantId: 'rest-noodle-lab',
-    name: 'Dan Dan Noodles',
-    description: 'Sesame chili sauce, minced chicken, bok choy, and crushed peanuts.',
-    priceCents: 1499,
-    imageUrl: 'https://images.unsplash.com/photo-1552611052-33e04de081de?auto=format&fit=crop&w=900&q=80',
-    isAvailable: true
-  }
-];
 
 const toPublicUser = (user: StoredUser): User => ({
   id: user.id,
   name: user.name,
   email: user.email,
   role: user.role,
+  phone: user.phone,
+  avatarUrl: user.avatarUrl,
   createdAt: user.createdAt
 });
+
+const matchesText = (value: string, query?: string) =>
+  !query || value.toLowerCase().includes(query.toLowerCase());
 
 export class MemoryRepository implements DoorstepRepository {
   private readonly users = new Map<string, StoredUser>();
   private readonly carts = new Map<string, CartItem[]>();
   private readonly orders = new Map<string, Order>();
+  private readonly addresses = new Map<string, Address[]>();
+  private readonly payments = new Map<string, PaymentMethod[]>();
+  private readonly notifications = new Map<string, Notification[]>();
+  private readonly reviewList: Review[] = [...reviews];
 
   constructor() {
     const createdAt = now();
     const passwordHash = bcrypt.hashSync('Doorstep123!', 10);
 
     [
-      {id: 'user-admin', name: 'Ava Admin', email: 'admin@doorstep.dev', role: 'admin' as const},
-      {id: 'user-driver', name: 'Drew Driver', email: 'driver@doorstep.dev', role: 'driver' as const},
-      {id: 'user-customer', name: 'Casey Customer', email: 'customer@doorstep.dev', role: 'customer' as const}
+      {
+        id: 'user-admin',
+        name: 'Ava Admin',
+        email: 'admin@doorstep.dev',
+        role: 'admin' as const,
+        avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=256&q=80'
+      },
+      {
+        id: 'user-driver',
+        name: 'Drew Driver',
+        email: 'driver@doorstep.dev',
+        role: 'driver' as const,
+        avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=256&q=80'
+      },
+      {
+        id: 'user-customer',
+        name: 'Casey Customer',
+        email: 'customer@doorstep.dev',
+        role: 'customer' as const,
+        phone: '+49 30 5550 1144',
+        avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80'
+      }
     ].forEach((user) => {
       this.users.set(user.id, {
         ...user,
@@ -136,6 +86,10 @@ export class MemoryRepository implements DoorstepRepository {
         createdAt
       });
     });
+
+    this.addresses.set('user-customer', [...demoAddresses]);
+    this.payments.set('user-customer', [...demoPayments]);
+    this.notifications.set('user-customer', [...demoNotifications]);
   }
 
   async createUser(input: CreateUserInput): Promise<User> {
@@ -153,6 +107,18 @@ export class MemoryRepository implements DoorstepRepository {
       createdAt: now()
     };
     this.users.set(user.id, user);
+    this.addresses.set(user.id, []);
+    this.notifications.set(user.id, [
+      {
+        id: randomUUID(),
+        userId: user.id,
+        title: 'Welcome to DoorStep',
+        body: 'Your account is ready for restaurant and grocery delivery.',
+        type: 'system',
+        isRead: false,
+        createdAt: now()
+      }
+    ]);
     return toPublicUser(user);
   }
 
@@ -165,20 +131,66 @@ export class MemoryRepository implements DoorstepRepository {
     return user ? toPublicUser(user) : null;
   }
 
+  async listUsers(): Promise<User[]> {
+    return [...this.users.values()].map(toPublicUser).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+  }
+
+  async listCategories(): Promise<Category[]> {
+    return categories;
+  }
+
+  async listStores(filters: StoreFilters = {}): Promise<Store[]> {
+    return stores
+      .filter((store) => (filters.type ? store.type === filters.type : true))
+      .filter((store) => (filters.featured === undefined ? true : store.isFeatured === filters.featured))
+      .filter((store) => (filters.category ? store.category.toLowerCase() === filters.category.toLowerCase() : true))
+      .filter((store) =>
+        filters.query
+          ? [store.name, store.cuisine, store.category, store.description, ...store.tags].some((value) =>
+              matchesText(value, filters.query)
+            )
+          : true
+      )
+      .sort((a, b) => Number(b.isOpen) - Number(a.isOpen) || Number(b.isFeatured) - Number(a.isFeatured) || b.rating - a.rating);
+  }
+
+  async getStore(idOrSlug: string): Promise<Store | null> {
+    return stores.find((store) => store.id === idOrSlug || store.slug === idOrSlug) ?? null;
+  }
+
+  async listProducts(filters: ProductFilters = {}): Promise<Product[]> {
+    return products
+      .filter((product) => (filters.storeId ? product.storeId === filters.storeId : true))
+      .filter((product) => (filters.categoryId ? product.categoryId === filters.categoryId : true))
+      .filter((product) => (filters.deal ? Boolean(product.discountPercent) : true))
+      .filter((product) => (filters.popular ? product.isPopular : true))
+      .filter((product) =>
+        filters.query
+          ? [product.name, product.description, product.category].some((value) => matchesText(value, filters.query))
+          : true
+      )
+      .sort((a, b) => Number(b.isPopular) - Number(a.isPopular) || b.rating - a.rating);
+  }
+
+  async getProduct(id: string): Promise<Product | null> {
+    return products.find((product) => product.id === id) ?? null;
+  }
+
   async listRestaurants(): Promise<Restaurant[]> {
-    return restaurants;
+    return this.listStores({type: 'restaurant'});
   }
 
   async getRestaurant(id: string): Promise<Restaurant | null> {
-    return restaurants.find((restaurant) => restaurant.id === id) ?? null;
+    const store = await this.getStore(id);
+    return store?.type === 'restaurant' ? store : store ?? null;
   }
 
   async listMenuItems(restaurantId: string): Promise<MenuItem[]> {
-    return menuItems.filter((item) => item.restaurantId === restaurantId);
+    return this.listProducts({storeId: restaurantId});
   }
 
   async getMenuItem(id: string): Promise<MenuItem | null> {
-    return menuItems.find((item) => item.id === id) ?? null;
+    return this.getProduct(id);
   }
 
   async getCart(userId: string): Promise<Cart> {
@@ -187,28 +199,37 @@ export class MemoryRepository implements DoorstepRepository {
   }
 
   async addCartItem(userId: string, menuItemId: string, quantity: number): Promise<Cart> {
-    const menuItem = await this.getMenuItem(menuItemId);
-    if (!menuItem || !menuItem.isAvailable) {
-      throw notFound('Menu item is not available');
+    const product = await this.getProduct(menuItemId);
+    if (!product || !product.isAvailable) {
+      throw notFound('Product is not available');
     }
 
-    const restaurant = await this.getRestaurant(menuItem.restaurantId);
-    if (!restaurant || !restaurant.isOpen) {
-      throw badRequest('Restaurant is currently closed');
+    const store = await this.getStore(product.storeId);
+    if (!store || !store.isOpen) {
+      throw badRequest('Store is currently closed');
     }
 
     const items = this.carts.get(userId) ?? [];
-    const existing = items.find((item) => item.menuItemId === menuItemId);
+    const cartStoreIds = new Set(items.map((item) => item.storeId));
+    if (cartStoreIds.size > 0 && !cartStoreIds.has(store.id)) {
+      throw badRequest('Cart can only contain items from one store per order');
+    }
+
+    const existing = items.find((item) => item.productId === menuItemId);
     if (existing) {
       existing.quantity += quantity;
     } else {
       items.push({
         id: randomUUID(),
         menuItemId,
-        restaurantId: restaurant.id,
-        restaurantName: restaurant.name,
-        name: menuItem.name,
-        priceCents: menuItem.priceCents,
+        productId: menuItemId,
+        restaurantId: store.id,
+        storeId: store.id,
+        restaurantName: store.name,
+        storeName: store.name,
+        name: product.name,
+        imageUrl: product.imageUrl,
+        priceCents: product.priceCents,
         quantity
       });
     }
@@ -237,15 +258,17 @@ export class MemoryRepository implements DoorstepRepository {
       throw badRequest('Cart is empty');
     }
 
-    const restaurantIds = new Set(cart.items.map((item) => item.restaurantId));
-    if (restaurantIds.size > 1) {
-      throw badRequest('Cart can only contain items from one restaurant per order');
+    const storeIds = new Set(cart.items.map((item) => item.storeId));
+    if (storeIds.size > 1) {
+      throw badRequest('Cart can only contain items from one store per order');
     }
 
     const firstItem = cart.items[0];
+    const store = await this.getStore(firstItem.storeId);
     const orderItems: OrderItem[] = cart.items.map((item) => ({
       id: randomUUID(),
       menuItemId: item.menuItemId,
+      productId: item.productId,
       name: item.name,
       quantity: item.quantity,
       unitPriceCents: item.priceCents
@@ -257,12 +280,17 @@ export class MemoryRepository implements DoorstepRepository {
       customerId: userId,
       driverId: null,
       restaurantId: firstItem.restaurantId,
+      storeId: firstItem.storeId,
       restaurantName: firstItem.restaurantName,
+      storeName: firstItem.storeName,
       status: 'placed',
       deliveryAddress,
       subtotalCents: cart.subtotalCents,
       deliveryFeeCents: cart.deliveryFeeCents,
+      serviceFeeCents: cart.serviceFeeCents,
+      discountCents: cart.discountCents,
       totalCents: cart.totalCents,
+      etaMinutes: store?.deliveryTimeMinutes ?? 28,
       items: orderItems,
       createdAt: timestamp,
       updatedAt: timestamp
@@ -274,11 +302,19 @@ export class MemoryRepository implements DoorstepRepository {
   }
 
   async listOrdersForUser(userId: string): Promise<Order[]> {
-    return [...this.orders.values()].filter((order) => order.customerId === userId);
+    return [...this.orders.values()]
+      .filter((order) => order.customerId === userId)
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   }
 
   async listOrdersForDriver(driverId: string): Promise<Order[]> {
-    return [...this.orders.values()].filter((order) => order.driverId === driverId);
+    return [...this.orders.values()]
+      .filter((order) => order.driverId === driverId)
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  }
+
+  async listAllOrders(): Promise<Order[]> {
+    return [...this.orders.values()].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   }
 
   async getOrder(id: string): Promise<Order | null> {
@@ -325,31 +361,139 @@ export class MemoryRepository implements DoorstepRepository {
     return updated;
   }
 
+  async listAddresses(userId: string): Promise<Address[]> {
+    return this.addresses.get(userId) ?? [];
+  }
+
+  async createAddress(userId: string, input: CreateAddressInput): Promise<Address> {
+    const current = this.addresses.get(userId) ?? [];
+    const address: Address = {
+      id: randomUUID(),
+      userId,
+      label: input.label,
+      line1: input.line1,
+      line2: input.line2,
+      city: input.city,
+      postalCode: input.postalCode,
+      instructions: input.instructions,
+      isDefault: input.isDefault ?? current.length === 0
+    };
+    const next = address.isDefault ? current.map((item) => ({...item, isDefault: false})) : current;
+    this.addresses.set(userId, [...next, address]);
+    return address;
+  }
+
+  async deleteAddress(userId: string, addressId: string): Promise<void> {
+    this.addresses.set(
+      userId,
+      (this.addresses.get(userId) ?? []).filter((address) => address.id !== addressId)
+    );
+  }
+
+  async listPaymentMethods(userId: string): Promise<PaymentMethod[]> {
+    return this.payments.get(userId) ?? [];
+  }
+
+  async listNotifications(userId: string): Promise<Notification[]> {
+    return this.notifications.get(userId) ?? [];
+  }
+
+  async markNotificationRead(userId: string, notificationId: string): Promise<Notification> {
+    const current = this.notifications.get(userId) ?? [];
+    const notification = current.find((item) => item.id === notificationId);
+    if (!notification) {
+      throw notFound('Notification not found');
+    }
+
+    const updated = {...notification, isRead: true};
+    this.notifications.set(
+      userId,
+      current.map((item) => (item.id === notificationId ? updated : item))
+    );
+    return updated;
+  }
+
+  async listCoupons(): Promise<Coupon[]> {
+    return coupons.filter((coupon) => coupon.isActive);
+  }
+
+  async listReviews(storeId: string): Promise<Review[]> {
+    return this.reviewList.filter((review) => review.storeId === storeId);
+  }
+
+  async createReview(input: CreateReviewInput): Promise<Review> {
+    const user = await this.findUserById(input.userId);
+    const review: Review = {
+      id: randomUUID(),
+      storeId: input.storeId,
+      userId: input.userId,
+      userName: user?.name ?? 'DoorStep customer',
+      rating: input.rating,
+      body: input.body,
+      createdAt: now()
+    };
+    this.reviewList.unshift(review);
+    return review;
+  }
+
   async adminOverview(): Promise<AdminOverview> {
-    const orders = [...this.orders.values()];
+    const orderList = [...this.orders.values()];
+    const delivered = orderList.filter((order) => order.status === 'delivered');
+    const revenueCents = delivered.reduce((total, order) => total + order.totalCents, 0);
+    const averageOrderValueCents = delivered.length > 0 ? Math.round(revenueCents / delivered.length) : 0;
+
     return {
-      openOrders: orders.filter((order) => !['delivered', 'cancelled'].includes(order.status)).length,
+      openOrders: orderList.filter((order) => !['delivered', 'cancelled'].includes(order.status)).length,
       activeDrivers: [...this.users.values()].filter((user) => user.role === 'driver').length,
-      revenueCents: orders
-        .filter((order) => order.status === 'delivered')
-        .reduce((total, order) => total + order.totalCents, 0),
-      restaurantsOnline: restaurants.filter((restaurant) => restaurant.isOpen).length
+      revenueCents,
+      restaurantsOnline: stores.filter((store) => store.type === 'restaurant' && store.isOpen).length,
+      storesOnline: stores.filter((store) => store.isOpen).length,
+      customers: [...this.users.values()].filter((user) => user.role === 'customer').length,
+      products: products.length,
+      conversionRate: 8.7,
+      averageOrderValueCents
+    };
+  }
+
+  async analyticsOverview(): Promise<AnalyticsOverview> {
+    const orderList = [...this.orders.values()];
+    const revenueCents = orderList.reduce((total, order) => total + order.totalCents, 0);
+    return {
+      revenueCents,
+      orders: orderList.length,
+      averageOrderValueCents: orderList.length > 0 ? Math.round(revenueCents / orderList.length) : 2260,
+      activeCustomers: [...this.users.values()].filter((user) => user.role === 'customer').length,
+      repeatPurchaseRate: 41,
+      fulfillmentRate: 97,
+      topStores: stores.slice(0, 5).map((store, index) => ({
+        storeId: store.id,
+        name: store.name,
+        revenueCents: 184000 - index * 21250,
+        orders: 128 - index * 13
+      })),
+      orderVolume: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, index) => ({
+        day,
+        orders: 34 + index * 7,
+        revenueCents: 62000 + index * 9800
+      }))
     };
   }
 
   private buildCart(userId: string, items: CartItem[]): Cart {
     const subtotalCents = items.reduce((total, item) => total + item.priceCents * item.quantity, 0);
-    const restaurant = items[0]
-      ? restaurants.find((current) => current.id === items[0]?.restaurantId)
-      : undefined;
-    const deliveryFeeCents = items.length > 0 ? restaurant?.deliveryFeeCents ?? 0 : 0;
+    const store = items[0] ? stores.find((current) => current.id === items[0]?.storeId) : undefined;
+    const deliveryFeeCents = items.length > 0 ? store?.deliveryFeeCents ?? 0 : 0;
+    const serviceFeeCents = items.length > 0 ? Math.max(99, Math.round(subtotalCents * 0.06)) : 0;
+    const discountCents = subtotalCents >= 3000 ? 500 : 0;
 
     return {
       userId,
       items,
       subtotalCents,
       deliveryFeeCents,
-      totalCents: subtotalCents + deliveryFeeCents
+      serviceFeeCents,
+      discountCents,
+      totalCents: Math.max(0, subtotalCents + deliveryFeeCents + serviceFeeCents - discountCents)
     };
   }
 }

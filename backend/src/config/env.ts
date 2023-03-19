@@ -9,7 +9,7 @@ const envSchema = z.object({
   JWT_SECRET: z.string().min(16).default('local-development-secret'),
   JWT_EXPIRES_IN: z.string().default('7d'),
   CORS_ORIGIN: z.string().default('http://localhost:5173'),
-  DATA_DRIVER: z.enum(['postgres', 'memory']).default('postgres'),
+  DATA_DRIVER: z.enum(['postgres', 'memory']).default('memory'),
   LOG_LEVEL: z.string().default('info')
 });
 

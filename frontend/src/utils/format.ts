@@ -1,7 +1,7 @@
 export const formatMoney = (valueCents: number) =>
-  new Intl.NumberFormat('en-US', {
+  new Intl.NumberFormat('en-DE', {
     style: 'currency',
-    currency: 'USD'
+    currency: 'EUR'
   }).format(valueCents / 100);
 
 export const statusLabel = (status: string) =>
@@ -9,4 +9,3 @@ export const statusLabel = (status: string) =>
     .split('_')
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
-

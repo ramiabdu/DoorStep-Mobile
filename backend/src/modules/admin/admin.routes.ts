@@ -37,6 +37,46 @@ export const createAdminRouter = (repository: DoorstepRepository) => {
     })
   );
 
+  router.get(
+    '/orders/all',
+    asyncHandler(async (_request, response) => {
+      const orders = await repository.listAllOrders();
+      response.json({orders});
+    })
+  );
+
+  router.get(
+    '/stores',
+    asyncHandler(async (_request, response) => {
+      const stores = await repository.listStores();
+      response.json({stores});
+    })
+  );
+
+  router.get(
+    '/products',
+    asyncHandler(async (_request, response) => {
+      const products = await repository.listProducts();
+      response.json({products});
+    })
+  );
+
+  router.get(
+    '/users',
+    asyncHandler(async (_request, response) => {
+      const users = await repository.listUsers();
+      response.json({users});
+    })
+  );
+
+  router.get(
+    '/analytics',
+    asyncHandler(async (_request, response) => {
+      const analytics = await repository.analyticsOverview();
+      response.json({analytics});
+    })
+  );
+
   router.patch(
     '/orders/:orderId/assign',
     validate(assignSchema),

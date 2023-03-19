@@ -5,6 +5,7 @@ coverage/
 .env.local
 .DS_Store
 *.log
+*.tsbuildinfo
 tmp/
 .turbo/
 .vercel/
