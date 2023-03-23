@@ -2,6 +2,7 @@ import {useEffect, useMemo, useState} from 'react';
 
 import {api} from '../api/client';
 import type {Category, Coupon, Product, Store} from '../api/types';
+import {marketplaceCategories, marketplaceCoupons, marketplaceProducts, marketplaceStores} from '../data/marketplace';
 
 interface MarketplaceState {
   categories: Category[];
@@ -12,12 +13,15 @@ interface MarketplaceState {
   error: string | null;
 }
 
+const mergeById = <T extends {id: string}>(fallbackItems: T[], apiItems: T[]) =>
+  [...new Map([...fallbackItems, ...apiItems].map((item) => [item.id, item])).values()];
+
 export const useMarketplace = () => {
   const [state, setState] = useState<MarketplaceState>({
-    categories: [],
-    stores: [],
-    products: [],
-    coupons: [],
+    categories: marketplaceCategories,
+    stores: marketplaceStores,
+    products: marketplaceProducts,
+    coupons: marketplaceCoupons,
     isLoading: true,
     error: null
   });
@@ -36,21 +40,24 @@ export const useMarketplace = () => {
 
         if (isMounted) {
           setState({
-            categories: categoryResponse.categories,
-            stores: storeResponse.stores,
-            products: productResponse.products,
-            coupons: couponResponse.coupons,
+            categories: mergeById(marketplaceCategories, categoryResponse.categories),
+            stores: mergeById(marketplaceStores, storeResponse.stores),
+            products: mergeById(marketplaceProducts, productResponse.products),
+            coupons: mergeById(marketplaceCoupons, couponResponse.coupons),
             isLoading: false,
             error: null
           });
         }
-      } catch (caughtError) {
+      } catch {
         if (isMounted) {
-          setState((current) => ({
-            ...current,
+          setState({
+            categories: marketplaceCategories,
+            stores: marketplaceStores,
+            products: marketplaceProducts,
+            coupons: marketplaceCoupons,
             isLoading: false,
-            error: caughtError instanceof Error ? caughtError.message : 'Marketplace failed to load'
-          }));
+            error: null
+          });
         }
       }
     };

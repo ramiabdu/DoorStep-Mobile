@@ -61,7 +61,7 @@ export const StoreListingPage = ({type}: {type?: StoreType}) => {
           <Badge tone="primary">
             <StoreIcon size={14} /> DoorStep marketplace
           </Badge>
-          <h1>{title} near Berlin Mitte.</h1>
+          <h1>{title} near Nicosia, Cyprus.</h1>
           <p>Curated partners with live availability, transparent fees, and high-quality catalog data.</p>
         </div>
         <div className="listing-toolbar">

@@ -7,9 +7,13 @@ import type {Product, Review, Store} from '../../api/types';
 import {FloatingCart} from '../../components/cart/FloatingCart';
 import {ProductCard} from '../../components/product/ProductCard';
 import {Badge, Button, Card, EmptyState, ErrorBanner, LoadingSkeleton, RatingStars, SearchBar} from '../../components/ui';
+import {marketplaceProducts, marketplaceReviews, marketplaceStores} from '../../data/marketplace';
 import {useAuth} from '../../state/useAuth';
 import {useCart} from '../../state/useCart';
 import {formatMoney} from '../../utils/format';
+
+const mergeProducts = (fallbackProducts: Product[], apiProducts: Product[]) =>
+  [...new Map([...fallbackProducts, ...apiProducts].map((product) => [product.id, product])).values()];
 
 export const StoreDetailsPage = () => {
   const {storeId} = useParams();
@@ -32,13 +36,23 @@ export const StoreDetailsPage = () => {
       }
 
       try {
+        const fallbackStore = marketplaceStores.find((item) => item.id === storeId || item.slug === storeId);
+        const fallbackStoreProducts = marketplaceProducts.filter((product) => product.storeId === fallbackStore?.id);
         const response = await api.store(storeId);
         setStore(response.store);
-        setProducts(response.products);
-        setReviews(response.reviews);
+        setProducts(mergeProducts(fallbackStoreProducts, response.products));
+        setReviews(response.reviews.length > 0 ? response.reviews : marketplaceReviews.filter((review) => review.storeId === response.store.id));
         await refreshCart();
-      } catch (caughtError) {
-        setError(caughtError instanceof Error ? caughtError.message : 'Store failed to load');
+      } catch {
+        const fallbackStore = marketplaceStores.find((item) => item.id === storeId || item.slug === storeId);
+        if (fallbackStore) {
+          setStore(fallbackStore);
+          setProducts(marketplaceProducts.filter((product) => product.storeId === fallbackStore.id));
+          setReviews(marketplaceReviews.filter((review) => review.storeId === fallbackStore.id));
+          setError(null);
+        } else {
+          setError('Store failed to load');
+        }
       } finally {
         setIsLoading(false);
       }

@@ -37,7 +37,7 @@ export const AppLayout = () => {
 
         <button className="location-chip" type="button">
           <MapPin size={16} />
-          <span>Berlin Mitte</span>
+          <span>Nicosia, Cyprus</span>
         </button>
 
         <nav className="nav-links" aria-label="Main navigation">

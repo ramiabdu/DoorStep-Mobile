@@ -84,7 +84,7 @@ Example checkout:
 
 ```json
 {
-  "deliveryAddress": "Rosenthaler Str. 42, Berlin 10178"
+  "deliveryAddress": "Ledra Street 42, Nicosia 1011"
 }
 ```
 

@@ -562,10 +562,10 @@ export const demoAddresses: Address[] = [
     id: 'addr-home',
     userId: 'user-customer',
     label: 'Home',
-    line1: 'Rosenthaler Str. 42',
+    line1: 'Ledra Street 42',
     line2: 'Apt 5B',
-    city: 'Berlin',
-    postalCode: '10178',
+    city: 'Nicosia',
+    postalCode: '1011',
     instructions: 'Ring twice, leave at reception if unavailable.',
     isDefault: true
   },
@@ -573,9 +573,9 @@ export const demoAddresses: Address[] = [
     id: 'addr-office',
     userId: 'user-customer',
     label: 'Office',
-    line1: 'Potsdamer Platz 1',
-    city: 'Berlin',
-    postalCode: '10785',
+    line1: 'Makariou Avenue 1',
+    city: 'Nicosia',
+    postalCode: '1065',
     instructions: 'Meet at lobby coffee bar.',
     isDefault: false
   }

@@ -231,8 +231,8 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO addresses (id, user_id, label, line1, line2, city, postal_code, instructions, is_default)
 VALUES
-  ('addr-home', 'user-customer', 'Home', 'Rosenthaler Str. 42', 'Apt 5B', 'Berlin', '10178', 'Ring twice, leave at reception if unavailable.', TRUE),
-  ('addr-office', 'user-customer', 'Office', 'Potsdamer Platz 1', NULL, 'Berlin', '10785', 'Meet at lobby coffee bar.', FALSE)
+  ('addr-home', 'user-customer', 'Home', 'Ledra Street 42', 'Apt 5B', 'Nicosia', '1011', 'Ring twice, leave at reception if unavailable.', TRUE),
+  ('addr-office', 'user-customer', 'Office', 'Makariou Avenue 1', NULL, 'Nicosia', '1065', 'Meet at lobby coffee bar.', FALSE)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO payments (id, user_id, brand, last4, label, is_default)

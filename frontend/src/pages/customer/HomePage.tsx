@@ -92,7 +92,7 @@ export const HomePage = () => {
       <section className="home-hero">
         <div className="hero-copy">
           <Badge tone="dark">
-            <Zap size={14} /> 10,000 products delivered across Berlin
+            <Zap size={14} /> 10,000 products delivered across Nicosia
           </Badge>
           <h1>Food, groceries, and daily essentials at your door.</h1>
           <p>
