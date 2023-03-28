@@ -1,6 +1,23 @@
 import {useEffect, useMemo, useState} from 'react';
 import type {CSSProperties} from 'react';
-import {ArrowRight, BadgePercent, Clock3, Navigation, ShieldCheck, Sparkles, Truck, Zap} from 'lucide-react';
+import {
+  Apple,
+  ArrowRight,
+  BadgePercent,
+  Beef,
+  Carrot,
+  Coffee,
+  Drumstick,
+  Leaf,
+  Pizza,
+  ShoppingBasket,
+  Sparkles,
+  Truck,
+  Zap,
+  Clock3,
+  Navigation,
+  ShieldCheck
+} from 'lucide-react';
 import {Link, useNavigate} from 'react-router-dom';
 
 import {FloatingCart} from '../../components/cart/FloatingCart';
@@ -20,6 +37,19 @@ const promises = [
   {label: 'Live tracking', value: 'Courier GPS', icon: <Navigation size={18} />},
   {label: 'Protected checkout', value: 'Secure pay', icon: <ShieldCheck size={18} />}
 ];
+
+const categoryIcons = {
+  burgers: Beef,
+  chicken: Drumstick,
+  coffee: Coffee,
+  pizza: Pizza,
+  fruits: Apple,
+  vegetables: Carrot,
+  groceries: ShoppingBasket,
+  convenience: Zap,
+  'flash-deals': BadgePercent,
+  organic: Leaf
+};
 
 export const HomePage = () => {
   const navigate = useNavigate();
@@ -153,12 +183,18 @@ export const HomePage = () => {
           </Link>
         </div>
         <div className="category-slider">
-          {categories.map((category) => (
-            <Link className="category-chip" key={category.id} style={{'--chip-color': category.color} as CSSProperties} to={`/categories?category=${category.slug}`}>
-              <span>{category.icon.slice(0, 2)}</span>
-              <strong>{category.name}</strong>
-            </Link>
-          ))}
+          {categories.map((category) => {
+            const CategoryIcon = categoryIcons[category.slug as keyof typeof categoryIcons] ?? ShoppingBasket;
+
+            return (
+              <Link className="category-chip" key={category.id} style={{'--chip-color': category.color} as CSSProperties} to={`/categories?category=${category.slug}`}>
+                <span className="category-icon">
+                  <CategoryIcon size={25} strokeWidth={2.3} />
+                </span>
+                <strong>{category.name}</strong>
+              </Link>
+            );
+          })}
         </div>
 
         <div className="promo-carousel">
